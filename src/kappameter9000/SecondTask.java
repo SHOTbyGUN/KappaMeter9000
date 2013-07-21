@@ -4,9 +4,10 @@
  */
 package kappameter9000;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.TimerTask;
 import javafx.application.Platform;
-import javafx.scene.chart.XYChart;
 
 /**
  *
@@ -14,71 +15,80 @@ import javafx.scene.chart.XYChart;
  */
 public class SecondTask extends TimerTask {
     
-    int kappaAmount;
-    int i, sum, kpm;
-    int graphLenght = 600;
+    int kpmSecond = 0, graphSecond = 0;
+    int sumKpm;
+    
+    // Loop variables
+    /*
+    private Map.Entry pairs, pairs2;
+    private Iterator it, it2;
+    private Channel channel, channel2;
+    */
 
     @Override
     public void run() {
-        // Get kappa amount in a second
-        kappaAmount = Static.kappaCount.getAndSet(0);
-        // Set kappa amount to 60 second pool
-        Static.kappaPerSecond60.set(Static.currentSecond.getAndIncrement(), kappaAmount);
-        if(Static.currentSecond.get() >= 60)
-            Static.currentSecond.set(0);
         
-        kpm = calculateKappaPerMinute();
-        Static.kappaPerMinuteGraphData.set(Static.currentSecondGraph.getAndIncrement(), kpm);
-        if(Static.currentSecondGraph.get() >= graphLenght)
-            Static.currentSecondGraph.set(0);
-        
-        
-        
+        try {
+
+            kpmSecond = Static.currentSecond.getAndIncrement();
+            graphSecond = Static.currentSecondGraph.getAndIncrement();
+
+            // Check for int overflow
+            if(Static.currentSecond.get() >= 60)
+                Static.currentSecond.set(0);
+            if(Static.currentSecondGraph.get() >= Channel.graphLenght)
+                Static.currentSecondGraph.set(0);
+
+            sumKpm = 0;
+
+            for (Map.Entry pairs : Static.channels.entrySet()) {
+                sumKpm += ((Channel) pairs.getValue()).saveKappa(kpmSecond, graphSecond);
+            }
+            /*
+            // Terribad way to iterate trough hashmap
+            it = Static.channels.entrySet().iterator();
+            while (it.hasNext()) {
+                pairs = (Map.Entry)it.next();
+                channel = (Channel)pairs.getValue();
+
+                // Save kappa, and get sumKappa
+                sumKpm += channel.saveKappa(kpmSecond, graphSecond);
+                //it.remove(); // avoids a ConcurrentModificationException
+            }*/
         
         Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
-                Static.controller.setKPM(kpm);
-                Static.controller.getLineChart().getData().setAll(generateChart());
+                
+                try {
+                    // Update combined kpm
+                    Static.controller.setKPM(sumKpm);
+
+                    // Update graphs
+                    Static.controller.getLineChart().getData().clear();
+
+                    for (Map.Entry pairs : Static.channels.entrySet()) {
+                        Static.controller.getLineChart().getData().add(((Channel) pairs.getValue()).generateChart());
+                    }
+                    
+                } catch (Exception ex) {
+                    System.out.println("Error JavaFX GUI: " + ex.getMessage());
+                }
+                
+                
             }
         });
         
-    }
-    
-    private int calculateKappaPerMinute() {
-        
-        sum = 0;
-        
-        for(i = 0; i < 60; i++) {
-            sum += Static.kappaPerSecond60.get(i);
-        }
-        return sum;
-    }
-    
-    private XYChart.Series generateChart() {
-        
-        XYChart.Series<Integer,Integer> data = new XYChart.Series<>();
-        data.setName("KPM");
-        
-        for(i = 1; i < graphLenght + 1; i++) {
-            data.getData().add(new XYChart.Data(i, Static.kappaPerMinuteGraphData.get(getX(i))));
+        } catch (Exception ex) {
+            System.out.println("Error SecondTask " + ex.getMessage());
         }
         
-        return data;
-        
     }
     
     
-    private int getX(int x) {
-        
-        // input number to decrease from currentSecond...
-        x = Static.currentSecondGraph.get() - x;
-        if(x < 0)
-            x += graphLenght;
-        
-        return x;
-    }
+    
+
     
     
 }

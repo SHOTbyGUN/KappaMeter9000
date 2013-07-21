@@ -4,6 +4,8 @@
  */
 package kappameter9000;
 
+import java.util.ArrayList;
+import kappameter9000.commands.*;
 import org.jibble.pircbot.PircBot;
 
 /**
@@ -12,21 +14,51 @@ import org.jibble.pircbot.PircBot;
  */
 public class IrcClient extends PircBot {
     
+    private ArrayList<Command> commands = new ArrayList<>();
+    
     public IrcClient() {
         this.setName("KappaMeter9000");
+        commands.add(new Request());
+        commands.add(new Remove());
     }
+    
     
     
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
-        if(channel.equalsIgnoreCase(Static.controller.channelName.getText())) {
-            if(message.startsWith("Kappa ") || 
-                    message.contains(" Kappa ") || 
-                    message.equals("Kappa") || 
-                    message.endsWith(" Kappa")) {
-                Static.kappaCount.incrementAndGet();
+        
+        try {
+            // Process commands
+            if(channel.equals(Static.homeChannel) && message.startsWith("!")) {
+                for(Command command : commands) {
+                    if(message.startsWith(command.getCommandName())) {
+                        command.executeCommand(message, sender);
+                    }
+                }
             }
+        } catch (Exception ex) {
+            System.out.println("Error IrcClientCommand " + ex.getMessage());
         }
+        
+        try {
+            
+            // Find for kappa
+            if(Static.channels.containsKey(channel)) {
+                if(message.startsWith("Kappa ") || 
+                        message.contains(" Kappa ") || 
+                        message.equals("Kappa") || 
+                        message.endsWith(" Kappa")) {
+
+                    // Kappa found, increase kappaCount
+
+                    Static.channels.get(channel).kappaAmount.incrementAndGet();
+                }
+            }
+        
+        } catch (Exception ex) {
+            System.out.println("Error finding Kappa " + ex.getMessage());
+        }
+
     }
     
 }

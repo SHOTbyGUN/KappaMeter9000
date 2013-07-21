@@ -5,6 +5,8 @@
 package kappameter9000;
 
 import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import javafx.fxml.FXML;
@@ -32,9 +34,6 @@ public class MainGuiController implements Initializable {
     
     @FXML
     ProgressBar kpmProgressBar;
-    
-    @FXML
-    TextField channelName;
     
     @FXML
     Button buttonAnalyze;
@@ -73,7 +72,7 @@ public class MainGuiController implements Initializable {
                 if(Static.timer != null)
                     Static.timer.cancel();
                 
-                buttonAnalyze.setText("Analyze");
+                buttonAnalyze.setText("Start");
                 
                 analyzing = false;
                 
@@ -87,7 +86,13 @@ public class MainGuiController implements Initializable {
                 }
                 
                 Static.ircbot.connect("irc.twitch.tv", 6667, "kakkaalumella");
-                Static.ircbot.joinChannel(channelName.getText());
+                Static.ircbot.joinChannel(Static.homeChannel);
+                
+                // If there are channels... connect to them
+                for (Map.Entry pairs : Static.channels.entrySet()) {
+                    Channel channel = (Channel)pairs.getValue();
+                    Static.ircbot.joinChannel(channel.getName());
+                }
                 
                 Static.timer = new Timer("SecondTask", true);
                 Static.timer.scheduleAtFixedRate(new SecondTask(), 1000, 1000);

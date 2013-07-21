@@ -50,8 +50,6 @@ public class KappaMeter9000 extends Application {
                 }
             }
         });
-        
-        Static.showMessage("Debug viesti!");
     }
 
     /**
