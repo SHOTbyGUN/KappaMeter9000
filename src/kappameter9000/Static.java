@@ -4,14 +4,9 @@
  */
 package kappameter9000;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -23,7 +18,6 @@ import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import sun.misc.JavaxSecurityAuthKerberosAccess;
 
 /**
  *
@@ -34,14 +28,19 @@ public class Static {
     // Dynamic configuration values
     
     public static volatile int maxChannels = 10;
+    public static volatile int expirationNotificationMinsBefore = 10;
+    public static volatile int expirationDefaultHours = 2;
     
     
     // Main static variables
     
+    public static final String version = "Version 1.01";
+    
     public static final String homeChannel = "#kappameter9000";
     public static volatile FXMLLoader mainGui;
     public static volatile MainGuiController controller;
-    public static Timer timer;
+    public static Timer secondTimer;
+    public static Timer expireTimer;
     
     public static volatile IrcClient ircbot = new IrcClient();
     
@@ -70,6 +69,11 @@ public class Static {
             children(new Text(message), closeButton).
             alignment(Pos.CENTER).padding(new Insets(5)).build()));
         dialogStage.show();
+    }
+    
+    
+    public static void log(String message) {
+        System.out.println(message);
     }
     
 }

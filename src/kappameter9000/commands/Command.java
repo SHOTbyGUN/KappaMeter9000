@@ -4,6 +4,8 @@
  */
 package kappameter9000.commands;
 
+import kappameter9000.Static;
+
 /**
  *
  * @author shotbygun
@@ -17,10 +19,17 @@ public abstract class Command {
     }
     
     public void executeCommand(String message, String sender) {
-        execute(cleanMessage(message), sender);
+        try {
+            execute(cleanMessage(message), sender);
+        } catch (Exception ex) {
+            Static.log("Error in command: " + name + " "+ ex.getMessage());
+        }
+        
     }
     
-    protected abstract void execute(String[] chunks, String sender);
+    public abstract String getHelp();
+    
+    protected abstract void execute(String[] chunks, String sender) throws Exception;
     
     
     public String getCommandName() {
@@ -32,6 +41,10 @@ public abstract class Command {
         message = message.trim();
         String[] chunks = message.split(" ");
         return chunks;
+    }
+    
+    protected void sendMessage(String message, String sender) {
+        Static.ircbot.sendMessage(Static.homeChannel, sender + ": " + message);
     }
     
 }

@@ -23,32 +23,37 @@ public class Request extends Command {
         // max channels check
         if(Static.channels.size() < Static.maxChannels || sender.equalsIgnoreCase("shotbygun")) {
             
-            
-        
-            String newChannel = chunks[0];
-            
             // Check for asterix
-            if(!newChannel.startsWith("#")) {
-                newChannel = "#" + newChannel;
-            }
+            String channelName = Channel.makeChannelName(chunks[0]);
             
-            if(Static.channels.containsKey(newChannel)) {
-                Static.ircbot.sendMessage(Static.homeChannel, sender + ": " + "Channel already included");
+            if(Static.channels.containsKey(channelName)) {
+                sendMessage("Channel already exists", sender);
             } else {
                 // Check ok, new Channel
-                Channel channel = new Channel(newChannel);
-                Static.channels.put(newChannel, channel);
-                Static.ircbot.joinChannel(channel.getName());
-                Static.ircbot.sendMessage(Static.homeChannel, sender + ": " + channel.getCleanName() + " request successful");
+                Channel channel = null;
+                
+                try {
+                    channel = new Channel(channelName, sender);
+                    Static.channels.put(channel.getName(), channel);
+                    Static.ircbot.joinChannel(channel.getName());
+                    Static.ircbot.sendMessage(channel.getCleanName() + " request successful", sender);
+                } catch (Exception ex) {
+                    Static.log("Error joining channel " + channelName + " "+ ex.getMessage());
+                    if(channel != null) {
+                        channel.removeThisChannel();
+                    }
+                }
+                
             }
         } else {
-            Static.ircbot.sendMessage(
-                    Static.homeChannel, sender + 
-                    ": " + 
-                    "Maximum amount of channels already in use: " 
-                    + Static.maxChannels);
+            sendMessage("Maximum amount of channels already in use: " + Static.maxChannels, sender);
         }
         
+    }
+
+    @Override
+    public String getHelp() {
+        return "Type !request !<channelName> to request me to analyze that specific channel";
     }
     
     

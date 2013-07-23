@@ -5,7 +5,6 @@
 package kappameter9000;
 
 import java.net.URL;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -15,7 +14,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
 
 /**
  * FXML Controller class
@@ -24,7 +22,16 @@ import javafx.scene.control.TextField;
  */
 public class MainGuiController implements Initializable {
     
+    public static final double blue = 9d;
+    public static final double green = 90d;
+    public static final double yellow = 900d;
+    public static final double red = 9000d;
+    public static final double black = -1d;
+    private double tempProgressBar;
+    
     private boolean analyzing = false;
+    
+    private static final String[] barColorStyleClasses = { "black-bar", "red-bar", "yellow-bar", "green-bar", "blue-bar" };
 
     /**
      * Initializes the controller class.
@@ -41,17 +48,49 @@ public class MainGuiController implements Initializable {
     @FXML
     Label kpmNumber;
     
+    @FXML
+    Label versionLabel;
+    
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        versionLabel.setText(Static.version);
         kpmLineChart.setAnimated(false);
         kpmLineChart.setCreateSymbols(false);
-    }    
+        kpmProgressBar.getStylesheets().add(getClass().getResource("/css/myProgressBarStyle.css").toExternalForm());
+    }
+    
+    private void setBarStyleClass(String barStyleClass) {
+        kpmProgressBar.getStyleClass().removeAll(barColorStyleClasses);
+        kpmProgressBar.getStyleClass().add(barStyleClass);
+    }
 
     public void setKPM(int number) {
         kpmNumber.setText(Integer.toString(number));
-        kpmProgressBar.setProgress((double)number / 100d);
+        tempProgressBar = (double)number;
+        if(number <= blue) {
+            // Blue bar
+            setBarStyleClass("blue-bar");
+            kpmProgressBar.setProgress(tempProgressBar / blue);
+        } else if(number <= green) {
+            // Green bar
+            setBarStyleClass("green-bar");
+            kpmProgressBar.setProgress(tempProgressBar / green);
+        } else if(number <= yellow) {
+            // Yellow bar
+            setBarStyleClass("yellow-bar");
+            kpmProgressBar.setProgress(tempProgressBar / yellow);
+        } else if (number <= red) {
+            // Red bar
+            setBarStyleClass("red-bar");
+            kpmProgressBar.setProgress(tempProgressBar / red);
+        } else {
+            // Out of control
+            setBarStyleClass("black-bar");
+            kpmProgressBar.setProgress(black);
+        }
+        
     }
     
     public LineChart<Integer, Integer> getLineChart() {
@@ -59,7 +98,7 @@ public class MainGuiController implements Initializable {
     }
     
     @FXML
-    protected void channelGo() {
+    protected void startStopAction() {
         try {
             
             if(analyzing) {
@@ -69,8 +108,12 @@ public class MainGuiController implements Initializable {
                 if(Static.ircbot.isConnected())
                     Static.ircbot.disconnect();
                 
-                if(Static.timer != null)
-                    Static.timer.cancel();
+                if(Static.secondTimer != null)
+                    Static.secondTimer.cancel();
+                
+                if(Static.expireTimer != null) {
+                    Static.expireTimer.cancel();
+                }
                 
                 buttonAnalyze.setText("Start");
                 
@@ -94,8 +137,12 @@ public class MainGuiController implements Initializable {
                     Static.ircbot.joinChannel(channel.getName());
                 }
                 
-                Static.timer = new Timer("SecondTask", true);
-                Static.timer.scheduleAtFixedRate(new SecondTask(), 1000, 1000);
+                Static.secondTimer = new Timer("SecondTask", true);
+                Static.secondTimer.scheduleAtFixedRate(new SecondTask(), 1000, 1000);
+                
+                Static.expireTimer = new Timer("ExpireTask", true);
+                Static.expireTimer.scheduleAtFixedRate(new ExpireTask(), 1000, ExpireTask.interval);
+                
                 
                 buttonAnalyze.setText("Stop");
                 

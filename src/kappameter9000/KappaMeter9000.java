@@ -36,18 +36,7 @@ public class KappaMeter9000 extends Application {
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent t) {
-                try {
-                    if(Static.timer != null)
-                        Static.timer.cancel();
-                    if(Static.ircbot != null) {
-                        Static.ircbot.disconnect();
-                        Static.ircbot.dispose();
-                    }
-                } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
-                } finally {
-                    Platform.exit();
-                }
+                shutdown();
             }
         });
     }
@@ -64,5 +53,22 @@ public class KappaMeter9000 extends Application {
         
         launch(args);
         
+    }
+    
+    public static void shutdown() {
+        try {
+            if(Static.ircbot != null) {
+                if(Static.ircbot.isConnected()) {
+                    Static.ircbot.sendMessage(Static.homeChannel, "Shutdown");
+                    Thread.sleep(1000);
+                }
+                Static.ircbot.disconnect();
+                Static.ircbot.dispose();
+            }
+        } catch (Exception ex) {
+            Static.log(ex.getMessage());
+        } finally {
+            Platform.exit();
+        }
     }
 }

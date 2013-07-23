@@ -73,7 +73,7 @@ public class SecondTask extends TimerTask {
                     }
                     
                 } catch (Exception ex) {
-                    System.out.println("Error JavaFX GUI: " + ex.getMessage());
+                    Static.log("Error JavaFX GUI: " + ex.getMessage());
                 }
                 
                 
@@ -81,7 +81,7 @@ public class SecondTask extends TimerTask {
         });
         
         } catch (Exception ex) {
-            System.out.println("Error SecondTask " + ex.getMessage());
+            Static.log("Error SecondTask " + ex.getMessage());
         }
         
     }

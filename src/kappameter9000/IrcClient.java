@@ -20,6 +20,9 @@ public class IrcClient extends PircBot {
         this.setName("KappaMeter9000");
         commands.add(new Request());
         commands.add(new Remove());
+        commands.add(new Help());
+        commands.add(new Renew());
+        commands.add(new Who());
     }
     
     
@@ -37,17 +40,14 @@ public class IrcClient extends PircBot {
                 }
             }
         } catch (Exception ex) {
-            System.out.println("Error IrcClientCommand " + ex.getMessage());
+            Static.log("Error IrcClientCommand " + ex.getMessage());
         }
         
         try {
             
             // Find for kappa
             if(Static.channels.containsKey(channel)) {
-                if(message.startsWith("Kappa ") || 
-                        message.contains(" Kappa ") || 
-                        message.equals("Kappa") || 
-                        message.endsWith(" Kappa")) {
+                if(message.contains("Kappa")) {
 
                     // Kappa found, increase kappaCount
 
@@ -56,9 +56,13 @@ public class IrcClient extends PircBot {
             }
         
         } catch (Exception ex) {
-            System.out.println("Error finding Kappa " + ex.getMessage());
+            Static.log("Error finding Kappa " + ex.getMessage());
         }
 
+    }
+    
+    public ArrayList<Command> getCommands() {
+        return commands;
     }
     
 }
