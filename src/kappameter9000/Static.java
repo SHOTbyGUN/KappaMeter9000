@@ -34,7 +34,7 @@ public class Static {
     
     // Main static variables
     
-    public static final String version = "Version 1.01";
+    public static final String version = "Version 1.02";
     
     public static final String homeChannel = "#kappameter9000";
     public static volatile FXMLLoader mainGui;

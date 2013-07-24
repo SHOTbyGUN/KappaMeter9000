@@ -34,7 +34,7 @@ public class Who extends Command{
         } else {
             sendMessage("Channel "
                     + Channel.makeCleanChannelName(channelName)
-                    + "was not found", sender);
+                    + " was not found", sender);
         }
     }
     

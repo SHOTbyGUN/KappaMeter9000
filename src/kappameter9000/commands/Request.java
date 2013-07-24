@@ -36,12 +36,18 @@ public class Request extends Command {
                     channel = new Channel(channelName, sender);
                     Static.channels.put(channel.getName(), channel);
                     Static.ircbot.joinChannel(channel.getName());
-                    Static.ircbot.sendMessage(channel.getCleanName() + " request successful", sender);
+                    sendMessage(channel.getCleanName() + " request successful", sender);
                 } catch (Exception ex) {
-                    Static.log("Error joining channel " + channelName + " "+ ex.getMessage());
+                    Static.log("Error joining channel " + Channel.makeCleanChannelName(channelName) + " "+ ex.getMessage());
                     if(channel != null) {
                         channel.removeThisChannel();
                     }
+                    if(channelName.equals(Static.homeChannel)) {
+                        sendMessage("Cannot join to home channel", sender);
+                    } else {
+                        sendMessage("Error joining channel " + channelName, sender);
+                    }
+                    
                 }
                 
             }

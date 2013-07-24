@@ -23,6 +23,7 @@ public class IrcClient extends PircBot {
         commands.add(new Help());
         commands.add(new Renew());
         commands.add(new Who());
+        commands.add(new Kpm());
     }
     
     

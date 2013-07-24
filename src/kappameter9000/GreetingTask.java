@@ -13,7 +13,7 @@ import java.util.TimerTask;
 public class GreetingTask extends TimerTask {
 
     private Channel channel;
-    public static final long greetAfter = 1000*60;
+    public static final int greetAfterSeconds = 60;
     
     public GreetingTask(Channel channel) {
         this.channel = channel;
@@ -21,7 +21,7 @@ public class GreetingTask extends TimerTask {
     
     @Override
     public void run() {
-        Static.ircbot.sendMessage(channel.getName(), "Initialized! Graph on my channel");
+        Static.ircbot.sendMessage(channel.getName(), "I Was requested here! KPM Graph on my channel ;)");
     }
     
 }

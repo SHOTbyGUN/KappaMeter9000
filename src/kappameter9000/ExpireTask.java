@@ -26,16 +26,16 @@ public class ExpireTask extends TimerTask {
         
         Calendar notifyTime = Calendar.getInstance();
         notifyTime.setTime(new Date());
-        notifyTime.add(Calendar.MINUTE, - Static.expirationNotificationMinsBefore);
+        notifyTime.add(Calendar.MINUTE, Static.expirationNotificationMinsBefore);
         
         Channel channel;
         
         for(Map.Entry channelKey : Static.channels.entrySet()) {
             channel = (Channel) channelKey.getValue();
-            if(channel.getExpireTime().after(currentTime)) {
+            if(channel.getExpireTime().before(currentTime)) {
                 channel.removeThisChannel();
                 Static.ircbot.sendMessage(Static.homeChannel, "Channel " + channel.getCleanName() +  " has expired");
-            } else if (channel.getExpireTime().after(notifyTime)) {
+            } else if (channel.getExpireTime().before(notifyTime)) {
                 channel.notifyExpiration();
             }
         }

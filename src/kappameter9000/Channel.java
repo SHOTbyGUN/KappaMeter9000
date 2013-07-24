@@ -30,6 +30,7 @@ public class Channel {
     
     private int sum, i, kpm;
     private Timer greetingTimer;
+    private Calendar greetingFireTime;
     
     public Channel(String channelName, String requestedBy) throws Exception {
         
@@ -45,7 +46,12 @@ public class Channel {
         this.kappaAmount = new AtomicInteger(0);
         this.kappaPerSecond60 = new AtomicIntegerArray(60);
         this.kappaGraphData = new AtomicIntegerArray(graphLenght);
-        greetingTimer.schedule(new GreetingTask(this), GreetingTask.greetAfter);
+        
+        // Start greeting timer
+        greetingTimer = new Timer("GreetingTask", true);
+        greetingFireTime = Calendar.getInstance();
+        greetingFireTime.add(Calendar.MINUTE, GreetingTask.greetAfterSeconds);
+        greetingTimer.schedule(new GreetingTask(this), greetingFireTime.getTime());
     }
     
     public Calendar getExpireTime() {
@@ -64,7 +70,9 @@ public class Channel {
             Static.ircbot.sendMessage(Static.homeChannel, 
                     "Channel " 
                     + getCleanName() 
-                    + " is about to expire, type !renew " 
+                    + " is about to expire with kpm "
+                    + getCurrentKpm()
+                    + ", type !renew " 
                     + getCleanName() 
                     + " to remove expiration");
         }
