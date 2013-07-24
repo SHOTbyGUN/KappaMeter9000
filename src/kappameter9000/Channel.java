@@ -50,7 +50,7 @@ public class Channel {
         // Start greeting timer
         greetingTimer = new Timer("GreetingTask", true);
         greetingFireTime = Calendar.getInstance();
-        greetingFireTime.add(Calendar.MINUTE, GreetingTask.greetAfterSeconds);
+        greetingFireTime.add(Calendar.SECOND, GreetingTask.greetAfterSeconds);
         greetingTimer.schedule(new GreetingTask(this), greetingFireTime.getTime());
     }
     
