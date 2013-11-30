@@ -4,9 +4,6 @@
  */
 package kappameter9000;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import javafx.scene.chart.XYChart;
@@ -19,7 +16,7 @@ public class Channel {
     
     public static final int graphLenght = 600;
     
-    private String channelName, cleanChannelName, requestedBy;
+    private String channelName, cleanChannelName;
     //private int record;
     
     public volatile AtomicInteger kappaAmount;
@@ -28,18 +25,13 @@ public class Channel {
     
     private int sum, i, kpm;
     
-    public Channel(String channelName, String requestedBy) throws Exception {
-        
-        if(channelName.equals(Static.homeChannel)) {
-            throw new Exception("Cannot join home channel");
-        }
-        
-        this.channelName = channelName;
+    public Channel(String channelName) throws Exception {
+        this.channelName = makeChannelName(channelName);
         this.cleanChannelName = makeCleanChannelName(channelName);
-        this.requestedBy = requestedBy;
         this.kappaAmount = new AtomicInteger(0);
         this.kappaPerSecond60 = new AtomicIntegerArray(60);
         this.kappaGraphData = new AtomicIntegerArray(graphLenght);
+        Static.ircbot.joinChannel(this.channelName);
     }
     
     public void removeThisChannel() {
@@ -57,10 +49,6 @@ public class Channel {
     
     public int getCurrentKpm() {
         return kappaGraphData.get(getX(1));
-    }
-    
-    public String getRequestedBy() {
-        return requestedBy;
     }
     
     public void addKappa() {
@@ -124,5 +112,9 @@ public class Channel {
         return x;
     }
     
-    
+    // THIS IS USED IN LIST VIEW OBJECT (hopefully)
+    @Override
+    public String toString() {
+        return getCleanName();
+    }
 }

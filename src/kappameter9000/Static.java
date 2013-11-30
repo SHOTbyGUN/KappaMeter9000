@@ -4,6 +4,7 @@
  */
 package kappameter9000;
 
+import java.nio.file.FileSystems;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,26 +26,26 @@ import javafx.stage.Stage;
  */
 public class Static {
     
-    // Dynamic configuration values
-    
-    public static volatile int maxChannels = 10;
-    public static volatile int expirationNotificationMinsBefore = 10;
-    public static volatile int expirationDefaultHours = 2;
-    
-    
     // Main static variables
+    public static final String APPNAME = "KappaMeter9000";
+    public static final String version = "Version 1.03";
     
-    public static final String version = "Version 1.02";
+    // Properties file
+    public static String propertiesFile = getFolder() + FileSystems.getDefault().getSeparator() + "settings.properties";
     
-    public static final String homeChannel = "#kappameter9000";
+    public static Settings settings = new Settings();
+    {
+        settings.loadSettings();
+    }
+    
+    // GUI Variables
+    public static volatile SettingsGUI settingsGUI;
     public static volatile FXMLLoader mainGui;
     public static volatile MainGuiController controller;
     public static Timer secondTimer;
-    public static Timer expireTimer;
     
-    public static volatile IrcClient ircbot = new IrcClient();
+    public static volatile IrcClient ircbot;
     
-    //public static volatile List<Channel> channels = Collections.synchronizedList(new ArrayList<Channel>());
     public static volatile ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<>();
     
     public static volatile AtomicInteger currentSecond = new AtomicInteger(0);
@@ -73,7 +74,13 @@ public class Static {
     
     
     public static void log(String message) {
-        System.out.println(message);
+        Static.settingsGUI.writeSysLog(message);
     }
     
+    
+    public static String getFolder() {
+        String folder = System.getenv("APPDATA");
+        folder += FileSystems.getDefault().getSeparator() + APPNAME;
+        return folder;
+    }
 }

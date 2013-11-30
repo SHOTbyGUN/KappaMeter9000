@@ -12,11 +12,10 @@ import org.jibble.pircbot.PircBot;
  */
 public class IrcClient extends PircBot {
     
-    public IrcClient() {
-        this.setName("KappaMeter9000");
+    public IrcClient(String name) {
+        this.setName(name);
+        this.setVerbose(true);
     }
-    
-    
     
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {

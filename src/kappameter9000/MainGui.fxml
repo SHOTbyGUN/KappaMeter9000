@@ -48,7 +48,6 @@
         <Point3D z="1.0" />
       </rotationAxis>
     </ProgressBar>
-    <Button fx:id="buttonAnalyze" mnemonicParsing="false" onAction="#startStopAction" text="Start" translateX="-20.0" AnchorPane.rightAnchor="-6.0" AnchorPane.topAnchor="14.0" />
     <VBox alignment="CENTER" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="620.0" AnchorPane.leftAnchor="427.0" AnchorPane.rightAnchor="426.0" AnchorPane.topAnchor="0.0">
       <children>
         <Label alignment="CENTER" contentDisplay="LEFT" graphicTextGap="4.0" maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" text="KappaMeter9000" textAlignment="CENTER" textFill="#990000" VBox.vgrow="SOMETIMES">

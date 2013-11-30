@@ -72,6 +72,8 @@ public class SecondTask extends TimerTask {
                         Static.controller.getLineChart().getData().add(((Channel) pairs.getValue()).generateChart());
                     }
                     
+                    Static.settingsGUI.updateChannelsListView();
+                    
                 } catch (Exception ex) {
                     Static.log("Error JavaFX GUI: " + ex.getMessage());
                 }
