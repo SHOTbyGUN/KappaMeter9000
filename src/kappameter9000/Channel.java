@@ -20,8 +20,6 @@ public class Channel {
     public static final int graphLenght = 600;
     
     private String channelName, cleanChannelName, requestedBy;
-    private Calendar expireTime;
-    private boolean expirationNotified = false;
     //private int record;
     
     public volatile AtomicInteger kappaAmount;
@@ -29,8 +27,6 @@ public class Channel {
     public volatile AtomicIntegerArray kappaGraphData;
     
     private int sum, i, kpm;
-    private Timer greetingTimer;
-    private Calendar greetingFireTime;
     
     public Channel(String channelName, String requestedBy) throws Exception {
         
@@ -41,46 +37,12 @@ public class Channel {
         this.channelName = channelName;
         this.cleanChannelName = makeCleanChannelName(channelName);
         this.requestedBy = requestedBy;
-        this.expireTime = Calendar.getInstance();
-        renewExpiration();
         this.kappaAmount = new AtomicInteger(0);
         this.kappaPerSecond60 = new AtomicIntegerArray(60);
         this.kappaGraphData = new AtomicIntegerArray(graphLenght);
-        
-        // Start greeting timer
-        greetingTimer = new Timer("GreetingTask", true);
-        greetingFireTime = Calendar.getInstance();
-        greetingFireTime.add(Calendar.SECOND, GreetingTask.greetAfterSeconds);
-        greetingTimer.schedule(new GreetingTask(this), greetingFireTime.getTime());
-    }
-    
-    public Calendar getExpireTime() {
-        return expireTime;
-    }
-    
-    public final void renewExpiration() {
-        expirationNotified = false;
-        expireTime.setTime(new Date());
-        expireTime.add(Calendar.HOUR_OF_DAY, Static.expirationDefaultHours);
-    }
-    
-    public void notifyExpiration() {
-        if(!expirationNotified) {
-            expirationNotified = true;
-            Static.ircbot.sendMessage(Static.homeChannel, 
-                    "Channel " 
-                    + getCleanName() 
-                    + " is about to expire with kpm "
-                    + getCurrentKpm()
-                    + ", type !renew " 
-                    + getCleanName() 
-                    + " to remove expiration");
-        }
     }
     
     public void removeThisChannel() {
-        if(greetingTimer != null)
-            greetingTimer.cancel();
         Static.ircbot.partChannel(getName());
         Static.channels.remove(getName());
     }

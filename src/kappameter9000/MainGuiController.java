@@ -140,9 +140,6 @@ public class MainGuiController implements Initializable {
                 Static.secondTimer = new Timer("SecondTask", true);
                 Static.secondTimer.scheduleAtFixedRate(new SecondTask(), 1000, 1000);
                 
-                Static.expireTimer = new Timer("ExpireTask", true);
-                Static.expireTimer.scheduleAtFixedRate(new ExpireTask(), 1000, ExpireTask.interval);
-                
                 
                 buttonAnalyze.setText("Stop");
                 
