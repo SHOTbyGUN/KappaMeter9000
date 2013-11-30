@@ -112,7 +112,7 @@ public class Channel {
         return x;
     }
     
-    // THIS IS USED IN LIST VIEW OBJECT (hopefully)
+    // THIS IS USED IN LIST VIEW OBJECT (maybe)
     @Override
     public String toString() {
         return getCleanName();

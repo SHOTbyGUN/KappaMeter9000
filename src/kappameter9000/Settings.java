@@ -21,7 +21,7 @@ public class Settings {
         defaults.setProperty("ircServer", "irc.twitch.tv");
         defaults.setProperty("ircPort", "6667");
         defaults.setProperty("ircUserName", "KappaMeter9000");
-        defaults.setProperty("ircPassword", "oauth:g4yvostjhbvgumwh9v9vpi70kp7xzff");
+        defaults.setProperty("ircPassword", "oauth:rkcc75hrusrv3timpeqvpra11ps022u");
         
         properties = new Properties(defaults);
     }

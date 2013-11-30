@@ -14,8 +14,10 @@ public class IrcClient extends PircBot {
     
     public IrcClient(String name) {
         this.setName(name);
-        this.setVerbose(true);
+        //this.setVerbose(true);
     }
+    
+    private int i;
     
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
@@ -23,11 +25,12 @@ public class IrcClient extends PircBot {
             
             // Find for kappa
             if(Static.channels.containsKey(channel)) {
-                if(message.contains("Kappa")) {
-
-                    // Kappa found, increase kappaCount
-
-                    Static.channels.get(channel).kappaAmount.incrementAndGet();
+                for(i = 0; i < Static.kappas.size(); i++) {
+                    if(message.contains(Static.kappas.get(i))) {
+                        // Kappa found, increase kappaCount
+                        Static.channels.get(channel).addKappa();
+                        break;
+                    }
                 }
             }
         

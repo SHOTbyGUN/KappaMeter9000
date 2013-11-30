@@ -15,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -37,6 +38,11 @@ public class SettingsGUI {
     private ListView channelsListView;
     private Button channelsAddButton, channelsRemoveButton;
     private TextField channelsAddTextField;
+    // Channels
+    private ListView kappasListView;
+    private Button kappasAddButton, kappasRemoveButton;
+    private TextField kappasAddTextField;
+    
     
     // COMMON
     private Tab channelsTab, ircTab, kappasTab, sysLogTab, msgLogTab;
@@ -64,6 +70,7 @@ public class SettingsGUI {
         channelsTab.setClosable(false);
         channelsGridPane = createGridPane();
         channelsListView = new ListView<>();
+        channelsListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         channelsAddButton = new Button("Add");
         channelsAddButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -71,7 +78,7 @@ public class SettingsGUI {
                 try {
                     Channel channel = new Channel(channelsAddTextField.getText());
                     Static.channels.put(channel.getName(), channel);
-                    updateChannelsListView();
+                    updateListViews();
                 } catch (Exception ex) {
                     Static.log("error adding channel " + ex.toString());
                 }
@@ -83,7 +90,7 @@ public class SettingsGUI {
             public void handle(ActionEvent t) {
                 try {
                     Static.channels.get(((String) channelsListView.getSelectionModel().getSelectedItem())).removeThisChannel();
-                    updateChannelsListView();
+                    updateListViews();
                 } catch (Exception ex) {
                     Static.log("error removing channel " + ex.toString());
                 }
@@ -91,10 +98,38 @@ public class SettingsGUI {
         });
         channelsAddTextField = new TextField();
         
-        // NETWORK SETTINGS
+        // KAPPAS
         kappasTab = new Tab("Kappas");
         kappasTab.setClosable(false);
         kappasGridPane = createGridPane();
+        
+        kappasListView = new ListView<>();
+        kappasListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        kappasAddButton = new Button("Add");
+        kappasAddButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                try {
+                    Static.kappas.add(kappasAddTextField.getText());
+                    updateListViews();
+                } catch (Exception ex) {
+                    Static.log("error adding channel " + ex.toString());
+                }
+            }
+        });
+        kappasRemoveButton = new Button("Remove");
+        kappasRemoveButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                try {
+                    Static.kappas.remove((String)kappasListView.getSelectionModel().getSelectedItem());
+                    updateListViews();
+                } catch (Exception ex) {
+                    Static.log("error removing channel " + ex.toString());
+                }
+            }
+        });
+        kappasAddTextField = new TextField();
         
         // IRC SETTINGS INIT
         ircGridPane = createGridPane();
@@ -195,7 +230,6 @@ public class SettingsGUI {
         
         channelsGridPane.add(new Label("Channels"), 0, gridRow);
         channelsGridPane.add(channelsListView, 1, gridRow++);
-        updateChannelsListView();
         
         channelsGridPane.add(new Label("Remove selected channel"), 0, gridRow);
         channelsGridPane.add(channelsRemoveButton, 1, gridRow++);
@@ -203,6 +237,21 @@ public class SettingsGUI {
         // KAPPAS TAB DEFINE
         rootTabPane.getTabs().add(kappasTab);
         kappasTab.setContent(kappasGridPane);
+        gridRow = 0;
+        
+        // KAPPAS Add
+        kappasGridPane.add(new Label("Emoticon Name"), 0, gridRow);
+        kappasGridPane.add(kappasAddTextField, 1, gridRow++);
+        
+        kappasGridPane.add(new Label("Add Emoticon"), 0, gridRow);
+        kappasGridPane.add(kappasAddButton, 1, gridRow++);
+        
+        kappasGridPane.add(new Label("Emoticons"), 0, gridRow);
+        kappasGridPane.add(kappasListView, 1, gridRow++);
+        
+        
+        kappasGridPane.add(new Label("Remove selected"), 0, gridRow);
+        kappasGridPane.add(kappasRemoveButton, 1, gridRow++);
         
         // SYSLOG TAB DEFINE
         rootTabPane.getTabs().add(sysLogTab);
@@ -220,6 +269,9 @@ public class SettingsGUI {
         stage.setTitle("KappaMeter9000 Settings");
         stage.setScene(scene);
         stage.show();
+        
+        initKappas();
+        updateListViews();
         
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -253,8 +305,23 @@ public class SettingsGUI {
         }
     }
     
-    public void updateChannelsListView() {
+    public void updateListViews() {
         channelsListView.getItems().setAll(Static.channels.keySet());
+        String[] kappaList = new String[Static.kappas.size()];
+        kappaList = Static.kappas.toArray(kappaList);
+        kappasListView.getItems().setAll((Object[])kappaList);
+    }
+    
+    public void initKappas() {
+        Static.kappas.add("Kappa");
+        Static.kappas.add("Keepo");
+        
+        // Turbo emotes
+        Static.kappas.add("MiniK");
+        Static.kappas.add("KappaHD");
+        
+        // Special
+        Static.kappas.add("Klappa");
     }
     
     

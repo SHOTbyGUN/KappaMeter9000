@@ -5,6 +5,7 @@
 package kappameter9000;
 
 import java.nio.file.FileSystems;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,15 +29,12 @@ public class Static {
     
     // Main static variables
     public static final String APPNAME = "KappaMeter9000";
-    public static final String version = "Version 1.03";
+    public static final String version = "Dreamhack Edition - Version 1.04";
     
     // Properties file
     public static String propertiesFile = getFolder() + FileSystems.getDefault().getSeparator() + "settings.properties";
     
     public static Settings settings = new Settings();
-    {
-        settings.loadSettings();
-    }
     
     // GUI Variables
     public static volatile SettingsGUI settingsGUI;
@@ -47,6 +45,7 @@ public class Static {
     public static volatile IrcClient ircbot;
     
     public static volatile ConcurrentHashMap<String, Channel> channels = new ConcurrentHashMap<>();
+    public static volatile ArrayList<String> kappas = new ArrayList<>();
     
     public static volatile AtomicInteger currentSecond = new AtomicInteger(0);
     public static volatile AtomicInteger currentSecondGraph = new AtomicInteger(0);
