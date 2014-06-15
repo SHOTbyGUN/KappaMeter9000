@@ -42,6 +42,7 @@ public class KappaMeter9000 extends Application {
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent t) {
+                Static.ircbot.disconnect();
                 shutdown();
             }
         });

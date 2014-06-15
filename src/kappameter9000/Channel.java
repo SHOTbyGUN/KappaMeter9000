@@ -14,6 +14,9 @@ import javafx.scene.chart.XYChart;
  */
 public class Channel {
     
+    // 60 = minute
+    // 600 = 10 minutes
+    // 3600 = hour
     public static final int graphLenght = 600;
     
     private String channelName, cleanChannelName;
@@ -53,6 +56,10 @@ public class Channel {
     
     public void addKappa() {
         kappaAmount.incrementAndGet();
+    }
+    
+    public void addKappas(int num) {
+        kappaAmount.addAndGet(num);
     }
     
     public int saveKappa(int kpmSecond, int graphSecond) {

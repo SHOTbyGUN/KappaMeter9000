@@ -321,7 +321,7 @@ public class SettingsGUI {
         Static.kappas.add("KappaHD");
         
         // Special
-        Static.kappas.add("Klappa");
+        Static.kappas.add("sirBane");
     }
     
     

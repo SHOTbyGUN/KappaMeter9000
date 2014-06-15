@@ -29,7 +29,7 @@ public class Static {
     
     // Main static variables
     public static final String APPNAME = "KappaMeter9000";
-    public static final String version = "Dreamhack Edition - Version 1.04";
+    public static final String version = "Version 1.05b";
     
     // Properties file
     public static String propertiesFile = getFolder() + FileSystems.getDefault().getSeparator() + "settings.properties";
