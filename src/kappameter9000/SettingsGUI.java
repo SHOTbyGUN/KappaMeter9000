@@ -4,14 +4,14 @@
  */
 package kappameter9000;
 
-import java.util.Enumeration;
-import java.util.Set;
+import com.sun.glass.ui.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
@@ -27,7 +27,7 @@ import static kappameter9000.KappaMeter9000.shutdown;
 
 /**
  *
- * @author s12100
+ * @author SHOT(by)GUN
  */
 public class SettingsGUI {
     
@@ -45,7 +45,7 @@ public class SettingsGUI {
     
     
     // COMMON
-    private Tab channelsTab, ircTab, kappasTab, sysLogTab, msgLogTab;
+    private Tab channelsTab, ircTab, kappasTab, sysLogTab;
     private GridPane channelsGridPane, ircGridPane, kappasGridPane;
     
     // IRC
@@ -53,11 +53,13 @@ public class SettingsGUI {
     private PasswordField ircPassword;
     private Button ircConnect, ircDisconnect;
     
-    // MSGLOG
-    private TextArea msgLogArea;
-    
     // SYSLOG
     private TextArea sysLogArea;
+    
+    // Hyperlink
+    private Hyperlink hyperlink;
+    
+    public Stage stage;
     
     int gridRow = 0;
 
@@ -141,6 +143,7 @@ public class SettingsGUI {
         ircPassword = new PasswordField();
         ircPassword.setText(Static.settings.get("ircPassword"));
         ircConnect = new Button("Connect");
+        
         ircConnect.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
@@ -148,13 +151,17 @@ public class SettingsGUI {
                     if(Static.ircbot != null)
                         Static.ircbot.disconnect();
                     
+                    rootTabPane.getSelectionModel().select(sysLogTab);
+                    
+                    // Save settings
+                    Static.settings.put("ircServer", ircServer.getText());
+                    Static.settings.put("ircPort", ircPort.getText());
+                    Static.settings.put("ircUserName", ircUserName.getText());
+                    Static.settings.put("ircPassword", ircPassword.getText());
+                    Static.settings.saveSettings();
+                    
                     Static.ircbot = new IrcClient(ircUserName.getText());
                     Static.ircbot.connect(ircServer.getText(), Integer.parseInt(ircPort.getText()), ircPassword.getText());
-                    if(Static.ircbot.isConnected()) {
-                        Static.log("Connected");
-                    } else {
-                        Static.log("Not connected");
-                    }
                 } catch (Exception ex) {
                     Static.log("error connecting to irc! " + ex.toString());
                 }
@@ -180,11 +187,6 @@ public class SettingsGUI {
         sysLogTab = new Tab("System Log");
         sysLogTab.setClosable(false);
         sysLogArea = new TextArea("Starting application");
-        
-        // MSGLOG SETTINGS INIT
-        msgLogTab = new Tab("Message Log");
-        msgLogTab.setClosable(false);
-        msgLogArea = new TextArea();
     }
     
     public void createStage() {
@@ -210,7 +212,17 @@ public class SettingsGUI {
         ircGridPane.add(ircPassword, 1, gridRow++);
         // Password hint
         ircGridPane.add(new Label("Get new OAUTH from:"), 0, gridRow);
-        ircGridPane.add(new Label("http://twitchapps.com/tmi/"), 1, gridRow++);
+        // Create Hyperlink
+        hyperlink = new Hyperlink("http://twitchapps.com/tmi/");
+        hyperlink.setOnAction(new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent t) {
+                    Static.kappaMeter9000.getHostServices().showDocument(hyperlink.getText());
+                }
+            });
+        
+        ircGridPane.add(hyperlink, 1, gridRow++);
         
         // Connect or Disconnect
         ircGridPane.add(ircConnect, 0, gridRow);
@@ -258,14 +270,16 @@ public class SettingsGUI {
         sysLogTab.setContent(sysLogArea);
         
         // MSGLOG TAB DEFINE
-        rootTabPane.getTabs().add(msgLogTab);
-        msgLogTab.setContent(msgLogArea);
+        /*
+            rootTabPane.getTabs().add(msgLogTab);
+            msgLogTab.setContent(msgLogArea);
+        */
         
         gridRow = 0;
         
         Scene scene = new Scene(rootTabPane, 400, 600);
         
-        Stage stage = new Stage();
+        stage = new Stage();
         stage.setTitle("KappaMeter9000 Settings");
         stage.setScene(scene);
         stage.show();
@@ -291,15 +305,7 @@ public class SettingsGUI {
     
     public void writeSysLog(String logMessage) {
         if(Platform.isFxApplicationThread()) {
-            sysLogArea.appendText(logMessage);
-        } else {
-            System.out.println("writeLog not in jfx thread!!!!!");
-        }
-    }
-    
-    public void writeMsgLog(String logMessage) {
-        if(Platform.isFxApplicationThread()) {
-            msgLogArea.appendText(logMessage);
+            sysLogArea.appendText(logMessage + "\n");
         } else {
             System.out.println("writeLog not in jfx thread!!!!!");
         }
@@ -313,6 +319,7 @@ public class SettingsGUI {
     }
     
     public void initKappas() {
+        // Default Kappas
         Static.kappas.add("Kappa");
         Static.kappas.add("Keepo");
         
@@ -320,7 +327,9 @@ public class SettingsGUI {
         Static.kappas.add("MiniK");
         Static.kappas.add("KappaHD");
         
-        // Special
+        // Subscriber kappas
+        
+        // Nathanias
         Static.kappas.add("sirBane");
     }
     

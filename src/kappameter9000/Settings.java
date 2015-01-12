@@ -4,13 +4,14 @@
  */
 package kappameter9000;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
 /**
  *
- * @author s12100
+ * @author SHOT(by)GUN
  */
 public class Settings {
     
@@ -19,11 +20,20 @@ public class Settings {
     
     public Settings() {
         defaults.setProperty("ircServer", "irc.twitch.tv");
+        // Event server is separate irc network from default irc.twitch.tv
+        // Details: http://www.reddit.com/r/Twitch/comments/20ejf4/how_to_join_to_all_split_chat_channels_for_a/cg2s05v
+        // Full chat server list available at: http://twitchstatus.com/
+        // Note that it is not possible to join all servers with traditional IRC client (like this application)
+        
+        //second event server 199.9.251.213
+        
         defaults.setProperty("ircPort", "6667");
-        defaults.setProperty("ircUserName", "KappaMeter9000");
-        defaults.setProperty("ircPassword", "oauth:rkcc75hrusrv3timpeqvpra11ps022u");
+        defaults.setProperty("ircUserName", "YourTwitchUserName");
+        defaults.setProperty("ircPassword", "oauth:password");
         
         properties = new Properties(defaults);
+        
+        loadSettings();
     }
     
     
@@ -39,7 +49,7 @@ public class Settings {
         properties.setProperty(key, value);
     }
     
-    public void loadSettings() {
+    public final void loadSettings() {
         try {
             FileInputStream in = new FileInputStream(Static.propertiesFile);
             properties.load(in);
@@ -52,6 +62,10 @@ public class Settings {
     
     public void saveSettings() {
         try {
+            File propertiesSaveFile = new File(Static.propertiesFile);
+            if(!propertiesSaveFile.getParentFile().exists()) {
+                propertiesSaveFile.getParentFile().mkdirs();
+            }
             FileOutputStream out = new FileOutputStream(Static.propertiesFile);
             properties.store(out, "---No Comment---");
             out.close();

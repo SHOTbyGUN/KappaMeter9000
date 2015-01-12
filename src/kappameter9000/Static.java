@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -27,9 +28,11 @@ import javafx.stage.Stage;
  */
 public class Static {
     
+    public static KappaMeter9000 kappaMeter9000;
+    
     // Main static variables
     public static final String APPNAME = "KappaMeter9000";
-    public static final String version = "Version 1.05b";
+    public static final String version = "Version 1.05c";
     
     // Properties file
     public static String propertiesFile = getFolder() + FileSystems.getDefault().getSeparator() + "settings.properties";
@@ -72,8 +75,20 @@ public class Static {
     }
     
     
-    public static void log(String message) {
-        Static.settingsGUI.writeSysLog(message);
+    public static void log(final String message) {
+        if(Static.settingsGUI == null) {
+            System.out.println("-- BEFORE INIT LOG MESSAGE --");
+            System.out.println(message);
+        } else {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    Static.settingsGUI.writeSysLog(message);
+                }
+                
+            });
+        }
+        
     }
     
     

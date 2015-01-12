@@ -52,5 +52,27 @@ public class IrcClient extends PircBot {
         }
 
     }
+
+    @Override
+    protected void onDisconnect() {
+        Static.log("Disconnected");
+    }
+
+    @Override
+    protected void onConnect() {
+        Static.log("Connected");
+    }
+
+    @Override
+    protected void onPrivateMessage(String sender, String login, String hostname, String message) {
+        Static.log(sender + "@" + hostname + ": " + message);
+    }
+
+    @Override
+    protected void onUnknown(String line) {
+        Static.log("ServerMessage: " + line);
+    }
+    
+    
     
 }

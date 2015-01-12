@@ -19,16 +19,19 @@ import javafx.stage.WindowEvent;
  */
 public class KappaMeter9000 extends Application {
     
+    
     @Override
     public void start(Stage stage) throws Exception {
         
+        Static.kappaMeter9000 = this;
+        
+        // Moved to static
         Static.settingsGUI = new SettingsGUI();
         Static.settingsGUI.createStage();
         
         
         Static.mainGui = new FXMLLoader(getClass().getResource("MainGui.fxml"));
         Static.mainGui.load();
-        //Parent root = Static.mainGui.load());
         Parent root = Static.mainGui.getRoot();
         Static.controller = Static.mainGui.getController();
         Static.controller.start();
@@ -38,6 +41,8 @@ public class KappaMeter9000 extends Application {
         stage.setTitle("KappaMeter9000");
         stage.setScene(scene);
         stage.show();
+        
+        Static.settingsGUI.stage.toFront();
         
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
