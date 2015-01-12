@@ -2,3 +2,6 @@
 
 Information about this project can be found on my homepage:
 http://www.shotbygun.com/software/kappameter9000
+
+Screenshots:
+http://imgur.com/a/sPezf
