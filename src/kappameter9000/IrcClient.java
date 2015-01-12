@@ -4,8 +4,7 @@
  */
 package kappameter9000;
 
-import java.util.ArrayList;
-import kappameter9000.commands.*;
+import org.apache.commons.lang3.StringUtils;
 import org.jibble.pircbot.PircBot;
 
 /**
@@ -14,45 +13,37 @@ import org.jibble.pircbot.PircBot;
  */
 public class IrcClient extends PircBot {
     
-    private ArrayList<Command> commands = new ArrayList<>();
-    
-    public IrcClient() {
-        this.setName("KappaMeter9000");
-        commands.add(new Request());
-        commands.add(new Remove());
-        commands.add(new Help());
-        commands.add(new Renew());
-        commands.add(new Who());
-        commands.add(new Kpm());
+    public IrcClient(String name) {
+        this.setName(name);
+        //this.setVerbose(true);
     }
     
-    
+    private int i;
+    private int numKappas;
     
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
-        
-        try {
-            // Process commands
-            if(channel.equals(Static.homeChannel) && message.startsWith("!")) {
-                for(Command command : commands) {
-                    if(message.startsWith(command.getCommandName())) {
-                        command.executeCommand(message, sender);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            Static.log("Error IrcClientCommand " + ex.getMessage());
-        }
-        
         try {
             
             // Find for kappa
             if(Static.channels.containsKey(channel)) {
-                if(message.contains("Kappa")) {
-
-                    // Kappa found, increase kappaCount
-
-                    Static.channels.get(channel).kappaAmount.incrementAndGet();
+                for(i = 0; i < Static.kappas.size(); i++) {
+                    
+                    // OLD 
+                    /*
+                    if(message.contains(Static.kappas.get(i))) {
+                        // Kappa found, increase kappaCount
+                        Static.channels.get(channel).addKappa();
+                        break;
+                    }
+                    */
+                    
+                    // NEW
+                    
+                    numKappas = StringUtils.countMatches(message, Static.kappas.get(i));
+                    Static.channels.get(channel).addKappas(numKappas);
+                    
+                    
                 }
             }
         
@@ -61,9 +52,27 @@ public class IrcClient extends PircBot {
         }
 
     }
-    
-    public ArrayList<Command> getCommands() {
-        return commands;
+
+    @Override
+    protected void onDisconnect() {
+        Static.log("Disconnected");
     }
+
+    @Override
+    protected void onConnect() {
+        Static.log("Connected");
+    }
+
+    @Override
+    protected void onPrivateMessage(String sender, String login, String hostname, String message) {
+        Static.log(sender + "@" + hostname + ": " + message);
+    }
+
+    @Override
+    protected void onUnknown(String line) {
+        Static.log("ServerMessage: " + line);
+    }
+    
+    
     
 }

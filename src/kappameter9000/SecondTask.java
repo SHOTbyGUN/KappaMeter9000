@@ -4,7 +4,6 @@
  */
 package kappameter9000;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TimerTask;
 import javafx.application.Platform;
@@ -71,6 +70,8 @@ public class SecondTask extends TimerTask {
                     for (Map.Entry pairs : Static.channels.entrySet()) {
                         Static.controller.getLineChart().getData().add(((Channel) pairs.getValue()).generateChart());
                     }
+                    
+                    //Static.settingsGUI.updateListViews();
                     
                 } catch (Exception ex) {
                     Static.log("Error JavaFX GUI: " + ex.getMessage());

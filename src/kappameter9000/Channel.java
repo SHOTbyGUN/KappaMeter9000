@@ -4,9 +4,6 @@
  */
 package kappameter9000;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import javafx.scene.chart.XYChart;
@@ -17,11 +14,12 @@ import javafx.scene.chart.XYChart;
  */
 public class Channel {
     
+    // 60 = minute
+    // 600 = 10 minutes
+    // 3600 = hour
     public static final int graphLenght = 600;
     
-    private String channelName, cleanChannelName, requestedBy;
-    private Calendar expireTime;
-    private boolean expirationNotified = false;
+    private String channelName, cleanChannelName;
     //private int record;
     
     public volatile AtomicInteger kappaAmount;
@@ -29,58 +27,17 @@ public class Channel {
     public volatile AtomicIntegerArray kappaGraphData;
     
     private int sum, i, kpm;
-    private Timer greetingTimer;
-    private Calendar greetingFireTime;
     
-    public Channel(String channelName, String requestedBy) throws Exception {
-        
-        if(channelName.equals(Static.homeChannel)) {
-            throw new Exception("Cannot join home channel");
-        }
-        
-        this.channelName = channelName;
+    public Channel(String channelName) throws Exception {
+        this.channelName = makeChannelName(channelName);
         this.cleanChannelName = makeCleanChannelName(channelName);
-        this.requestedBy = requestedBy;
-        this.expireTime = Calendar.getInstance();
-        renewExpiration();
         this.kappaAmount = new AtomicInteger(0);
         this.kappaPerSecond60 = new AtomicIntegerArray(60);
         this.kappaGraphData = new AtomicIntegerArray(graphLenght);
-        
-        // Start greeting timer
-        greetingTimer = new Timer("GreetingTask", true);
-        greetingFireTime = Calendar.getInstance();
-        greetingFireTime.add(Calendar.SECOND, GreetingTask.greetAfterSeconds);
-        greetingTimer.schedule(new GreetingTask(this), greetingFireTime.getTime());
-    }
-    
-    public Calendar getExpireTime() {
-        return expireTime;
-    }
-    
-    public final void renewExpiration() {
-        expirationNotified = false;
-        expireTime.setTime(new Date());
-        expireTime.add(Calendar.HOUR_OF_DAY, Static.expirationDefaultHours);
-    }
-    
-    public void notifyExpiration() {
-        if(!expirationNotified) {
-            expirationNotified = true;
-            Static.ircbot.sendMessage(Static.homeChannel, 
-                    "Channel " 
-                    + getCleanName() 
-                    + " is about to expire with kpm "
-                    + getCurrentKpm()
-                    + ", type !renew " 
-                    + getCleanName() 
-                    + " to remove expiration");
-        }
+        Static.ircbot.joinChannel(this.channelName);
     }
     
     public void removeThisChannel() {
-        if(greetingTimer != null)
-            greetingTimer.cancel();
         Static.ircbot.partChannel(getName());
         Static.channels.remove(getName());
     }
@@ -97,12 +54,12 @@ public class Channel {
         return kappaGraphData.get(getX(1));
     }
     
-    public String getRequestedBy() {
-        return requestedBy;
-    }
-    
     public void addKappa() {
         kappaAmount.incrementAndGet();
+    }
+    
+    public void addKappas(int num) {
+        kappaAmount.addAndGet(num);
     }
     
     public int saveKappa(int kpmSecond, int graphSecond) {
@@ -162,5 +119,9 @@ public class Channel {
         return x;
     }
     
-    
+    // THIS IS USED IN LIST VIEW OBJECT (maybe)
+    @Override
+    public String toString() {
+        return getCleanName();
+    }
 }

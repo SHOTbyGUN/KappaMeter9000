@@ -5,13 +5,11 @@
 package kappameter9000;
 
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 
@@ -29,8 +27,6 @@ public class MainGuiController implements Initializable {
     public static final double black = -1d;
     private double tempProgressBar;
     
-    private boolean analyzing = false;
-    
     private static final String[] barColorStyleClasses = { "black-bar", "red-bar", "yellow-bar", "green-bar", "blue-bar" };
 
     /**
@@ -41,9 +37,6 @@ public class MainGuiController implements Initializable {
     
     @FXML
     ProgressBar kpmProgressBar;
-    
-    @FXML
-    Button buttonAnalyze;
     
     @FXML
     Label kpmNumber;
@@ -97,57 +90,13 @@ public class MainGuiController implements Initializable {
         return kpmLineChart;
     }
     
-    @FXML
-    protected void startStopAction() {
+    public void start() {
         try {
-            
-            if(analyzing) {
-                
-                // if we are analyzing... we stop analyzing
-                
-                if(Static.ircbot.isConnected())
-                    Static.ircbot.disconnect();
-                
-                if(Static.secondTimer != null)
-                    Static.secondTimer.cancel();
-                
-                if(Static.expireTimer != null) {
-                    Static.expireTimer.cancel();
-                }
-                
-                buttonAnalyze.setText("Start");
-                
-                analyzing = false;
-                
-            } else {
-                
-                // We are not analyzing... start analyzing!
-                
-                if(Static.ircbot.isConnected()) {
-                    Static.ircbot.disconnect();
-                    Thread.sleep(500);
-                }
-                
-                Static.ircbot.connect("irc.twitch.tv", 6667, "kakkaalumella");
-                Static.ircbot.joinChannel(Static.homeChannel);
-                
-                // If there are channels... connect to them
-                for (Map.Entry pairs : Static.channels.entrySet()) {
-                    Channel channel = (Channel)pairs.getValue();
-                    Static.ircbot.joinChannel(channel.getName());
-                }
-                
-                Static.secondTimer = new Timer("SecondTask", true);
-                Static.secondTimer.scheduleAtFixedRate(new SecondTask(), 1000, 1000);
-                
-                Static.expireTimer = new Timer("ExpireTask", true);
-                Static.expireTimer.scheduleAtFixedRate(new ExpireTask(), 1000, ExpireTask.interval);
-                
-                
-                buttonAnalyze.setText("Stop");
-                
-                analyzing = true;
-            }
+
+            // We are not analyzing... start analyzing!
+
+            Static.secondTimer = new Timer("SecondTask", true);
+            Static.secondTimer.scheduleAtFixedRate(new SecondTask(), 1000, 1000);
             
         } catch (Exception ex) {
             Static.showMessage(ex.getMessage());

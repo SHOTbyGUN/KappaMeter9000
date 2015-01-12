@@ -19,13 +19,22 @@ import javafx.stage.WindowEvent;
  */
 public class KappaMeter9000 extends Application {
     
+    
     @Override
     public void start(Stage stage) throws Exception {
+        
+        Static.kappaMeter9000 = this;
+        
+        // Moved to static
+        Static.settingsGUI = new SettingsGUI();
+        Static.settingsGUI.createStage();
+        
+        
         Static.mainGui = new FXMLLoader(getClass().getResource("MainGui.fxml"));
         Static.mainGui.load();
-        //Parent root = Static.mainGui.load());
         Parent root = Static.mainGui.getRoot();
         Static.controller = Static.mainGui.getController();
+        Static.controller.start();
         
         Scene scene = new Scene(root);
         
@@ -33,9 +42,12 @@ public class KappaMeter9000 extends Application {
         stage.setScene(scene);
         stage.show();
         
+        Static.settingsGUI.stage.toFront();
+        
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent t) {
+                Static.ircbot.disconnect();
                 shutdown();
             }
         });
@@ -58,10 +70,6 @@ public class KappaMeter9000 extends Application {
     public static void shutdown() {
         try {
             if(Static.ircbot != null) {
-                if(Static.ircbot.isConnected()) {
-                    Static.ircbot.sendMessage(Static.homeChannel, "Shutdown");
-                    Thread.sleep(1000);
-                }
                 Static.ircbot.disconnect();
                 Static.ircbot.dispose();
             }
