@@ -1,10 +1,8 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+    https://api.twitch.tv/api/channels/<CHANNELNAME>/chat_properties
  */
 package kappameter9000;
 
-import com.sun.glass.ui.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

@@ -21,6 +21,7 @@ import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.SystemUtils;
 
 /**
  *
@@ -32,7 +33,7 @@ public class Static {
     
     // Main static variables
     public static final String APPNAME = "KappaMeter9000";
-    public static final String version = "Version 1.05c";
+    public static final String version = "Version 1.05d";
     
     // Properties file
     public static String propertiesFile = getFolder() + FileSystems.getDefault().getSeparator() + "settings.properties";
@@ -93,7 +94,23 @@ public class Static {
     
     
     public static String getFolder() {
-        String folder = System.getenv("APPDATA");
+        
+        String os = System.getProperty("os.name").toUpperCase();
+        String folder;
+        
+        if(SystemUtils.IS_OS_WINDOWS) {
+            folder = System.getenv("APPDATA");
+        } else if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_UNIX) {
+            folder = System.getProperty("user.home")
+                    + FileSystems.getDefault().getSeparator()
+                    + ".config";
+        } else {
+            log("unknown operating system, settings cannot be saved. please fix me"
+                    + " @ https://github.com/SHOTbyGUN/KappaMeter9000/blob/master/src/kappameter9000/Static.java#L95");
+            return null;
+        }
+        
+        
         folder += FileSystems.getDefault().getSeparator() + APPNAME;
         return folder;
     }
